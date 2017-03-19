@@ -45,7 +45,7 @@ public class TopicController {
     //implement custom methods
     @RequestMapping("/topics/search/{name}")
     public Topic getTopicByName(@PathVariable String name) {
-        return topicRepository.findByName(name);
+        return topicRepository.findById(name);
     }
 
     @RequestMapping("/topics/search/{id}/{name}")
@@ -56,11 +56,11 @@ public class TopicController {
     //implement custom method with @query annotation
     @RequestMapping("words/querysearch/name/{name}")
     public List<Topic> getTopicByNameQuery(@PathVariable String name) {
-        return topicRepository.queryFindByName(name);
+        return topicRepository.findByName(name);
     }
 
     @RequestMapping("words/querysearch/discription/discription}")
     public Topic getTopicByDiscription(@PathVariable String discription) {
-        return topicRepository.getTopicByDiscription(discription);
+        return topicRepository.findByDiscription(discription);
     }
 }
