@@ -1,59 +1,85 @@
 package pl.degath.blog.topic;
 
 import org.springframework.stereotype.Service;
+import pl.degath.blog.infrastucture.exception.InvalidParamsException;
+import pl.degath.blog.infrastucture.exception.NotFoundException;
 import pl.degath.blog.port.Repository;
 import pl.degath.blog.topic.dto.CreateTopicDto;
 import pl.degath.blog.topic.dto.DeleteTopicDto;
 import pl.degath.blog.topic.dto.ReadTopicDto;
 import pl.degath.blog.topic.dto.UpdateTopicDto;
 
+import java.util.Optional;
+
 @Service
 public class TopicServiceImpl implements TopicService {
 
     private final Repository<Topic> topicRepository;
 
-    public TopicServiceImpl(Repository<Topic> topicRepository) {
+    TopicServiceImpl(Repository<Topic> topicRepository) {
         this.topicRepository = topicRepository;
     }
 
     @Override
     public void createTopic(CreateTopicDto createTopicDto) {
-        //todo check if topicDto is null. (invalidInput)
-        //todo check if topic exists with given name (NotFound)
-        Topic topicToAdd = new Topic(createTopicDto.getTopicName(), createTopicDto.getTopicDescription());
+        Optional.ofNullable(createTopicDto)
+                .map(this::create)
+                .ifPresentOrElse(topicRepository::save, () -> {
+                    throw new InvalidParamsException();
+                });
+    }
 
-        topicRepository.save(topicToAdd);
+    private Topic create(CreateTopicDto createTopicDto) {
+        return new Topic(createTopicDto.getTopicName(), createTopicDto.getTopicDescription());
     }
 
     @Override
     public TopicDto readTopic(ReadTopicDto readTopicDto) {
-        //todo check if input is null. (invalidInput)
-        //todo check if topic with given id exists. (NotFound)
-
-        return topicRepository.findById(readTopicDto.getTopicId())
+        return Optional.ofNullable(readTopicDto)
+                .map(this::findById)
                 .map(TopicDto::new)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(InvalidParamsException::new);
+    }
+
+    private Topic findById(ReadTopicDto readTopicDto) {
+        return topicRepository.findById(readTopicDto.getTopicId())
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
     public void updateTopic(UpdateTopicDto updateTopicDto) {
-        //todo check if topicDto is null (invalidTarget)
-        Topic topicToEdit = topicRepository
-                .findById(updateTopicDto.getTopicId())
-                .orElseThrow(RuntimeException::new); //todo replace with NotFound
+        Optional.ofNullable(updateTopicDto)
+                .map(this::edit)
+                .ifPresentOrElse(topicRepository::save, () -> {
+                    throw new InvalidParamsException();
+                });
+    }
+
+    private Topic edit(UpdateTopicDto updateTopicDto) {
+        Topic topicToEdit = findById(updateTopicDto);
         topicToEdit.setName(updateTopicDto.getTopicName());
         topicToEdit.setDescription(updateTopicDto.getTopicDescription());
 
-        topicRepository.save(topicToEdit);
+        return topicToEdit;
+    }
+
+    private Topic findById(UpdateTopicDto updateTopicDto) {
+        return topicRepository
+                .findById(updateTopicDto.getTopicId())
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
     public void deleteTopic(DeleteTopicDto deleteTopicDto) {
-        //todo check if topicId is not null (invalidInput)
-        //todo check if topic exists with given id
+        Optional.ofNullable(deleteTopicDto)
+                .map(this::findById)
+                .ifPresentOrElse(topicRepository::delete, () -> {
+                    throw new InvalidParamsException();
+                });
+    }
 
-        topicRepository.deleteById(deleteTopicDto.getTopicId());
+    private Topic findById(DeleteTopicDto deleteTopicDto) {
+        return topicRepository.findById(deleteTopicDto.getTopicId())
+                .orElseThrow(NotFoundException::new);
     }
 }
-
-
