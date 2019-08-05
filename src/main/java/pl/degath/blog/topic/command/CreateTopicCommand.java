@@ -1,10 +1,12 @@
-package pl.degath.blog.topic.dto;
+package pl.degath.blog.topic.command;
 
-public class CreateTopicDto {
+import pl.degath.blog.infrastucture.Command;
+
+public class CreateTopicCommand implements Command {
     private final String topicName;
     private final String topicDescription;
 
-    public CreateTopicDto(String topicName, String topicDescription) {
+    public CreateTopicCommand(String topicName, String topicDescription) {
         this.topicName = topicName;
         this.topicDescription = topicDescription;
     }
