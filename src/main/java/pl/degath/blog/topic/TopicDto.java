@@ -14,10 +14,6 @@ class TopicDto {
         this.description = topic.getDescription();
     }
 
-    UUID getId() {
-        return id;
-    }
-
     String getName() {
         return name;
     }
