@@ -1,11 +1,11 @@
 package pl.degath.blog.topic;
 
-import org.junit.Before;
-import org.junit.Test;
-import pl.degath.blog.InMemoryRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import pl.degath.blog.InMemorySpringRepository;
 import pl.degath.blog.infrastucture.exception.InvalidParamsException;
 import pl.degath.blog.infrastucture.exception.NotFoundException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.port.SpringRepository;
 import pl.degath.blog.topic.command.DeleteTopicCommand;
 
 import java.util.UUID;
@@ -13,20 +13,20 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
-public class DeleteTopicHandlerTest {
+class DeleteTopicCommandHandlerTest {
 
-    private DeleteTopicHandler handler;
-    private Repository<Topic> repository;
+    private DeleteTopicCommandHandler handler;
+    private SpringRepository<Topic> repository;
 
-    @Before
-    public void setUp() {
-        repository = new InMemoryRepository<>();
-        handler = new DeleteTopicHandler(repository);
+    @BeforeEach
+    void setUp() {
+        repository = new InMemorySpringRepository<>();
+        handler = new DeleteTopicCommandHandler(repository);
     }
 
     @Test
-    public void deleteTopic_withExistingId_deletesTopic() {
-        UUID existingId = repository.save(new Topic("CRUD - part 4", "Basic deletion of topic.")).getId();
+    void deleteTopic_withExistingId_deletesTopic() {
+        UUID existingId = repository.save(new TopicBuilder().build()).getId();
         DeleteTopicCommand input = new DeleteTopicCommand(existingId);
 
         handler.handle(input);
@@ -40,7 +40,7 @@ public class DeleteTopicHandlerTest {
 
 
     @Test
-    public void deleteTopic_withNotExistingId_throwsNotFound() {
+    void deleteTopic_withNotExistingId_throwsNotFound() {
         UUID notExistingId = UUID.randomUUID();
         DeleteTopicCommand input = new DeleteTopicCommand(notExistingId);
 
@@ -51,7 +51,7 @@ public class DeleteTopicHandlerTest {
     }
 
     @Test
-    public void deleteTopic_withNotExistingId_throwsInvalidParams() {
+    void deleteTopic_withNotExistingId_throwsInvalidParams() {
         DeleteTopicCommand input = null;
 
         Throwable thrown = catchThrowable(() -> handler.handle(input));

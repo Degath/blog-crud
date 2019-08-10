@@ -2,15 +2,15 @@ package pl.degath.blog;
 
 import pl.degath.blog.infrastucture.EntityRoot;
 import pl.degath.blog.infrastucture.exception.NotImplementedException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.port.SpringRepository;
 
 import java.util.*;
 
-public class InMemoryRepository<T extends EntityRoot> implements Repository<T> {
+public class InMemorySpringRepository<T extends EntityRoot> implements SpringRepository<T> {
 
     private final Map<UUID, T> entities;
 
-    public InMemoryRepository() {
+    public InMemorySpringRepository() {
         this.entities = new HashMap<>();
     }
 

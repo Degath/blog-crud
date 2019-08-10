@@ -1,11 +1,11 @@
 package pl.degath.blog.topic;
 
-import org.junit.Before;
-import org.junit.Test;
-import pl.degath.blog.InMemoryRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import pl.degath.blog.InMemorySpringRepository;
 import pl.degath.blog.infrastucture.exception.InvalidParamsException;
 import pl.degath.blog.infrastucture.exception.NotFoundException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.port.SpringRepository;
 import pl.degath.blog.topic.command.UpdateTopicCommand;
 
 import java.util.UUID;
@@ -13,29 +13,31 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
-public class UpdateTopicHandlerTest {
+class UpdateTopicCommandHandlerTest {
 
-    private UpdateTopicHandler handler;
-    private Repository<Topic> repository;
+    private final String newTopicName = "Java";
+    private final String newTopicDescription = "The topic contains the basics of how to use the language.";
+    private UpdateTopicCommandHandler handler;
+    private SpringRepository<Topic> repository;
 
-    @Before
-    public void setUp() {
-        repository = new InMemoryRepository<>();
-        handler = new UpdateTopicHandler(repository);
+
+    @BeforeEach
+    void setUp() {
+        repository = new InMemorySpringRepository<>();
+        handler = new UpdateTopicCommandHandler(repository);
     }
 
     @Test
-    public void updateTopic_withValidInput_updatesTheTopic() {
-        UUID existingId = repository.save(new Topic("CRUD - part 1", "Basic creation of topic.")).getId();
-        String newTopicName = "CRUD - part 3";
-        String newTopicDescription = "CRUD - part 3";
+    void updateTopic_withValidInput_updatesTheTopic() {
+        Topic topic = new TopicBuilder().build();
+        UUID existingId = repository.save(topic).getId();
         UpdateTopicCommand input = new UpdateTopicCommand(existingId, newTopicName, newTopicDescription);
 
         handler.handle(input);
 
         Topic result = getFirst();
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingId);
         assertThat(result.getName()).isEqualTo(newTopicName);
         assertThat(result.getDescription()).isEqualTo(newTopicDescription);
     }
@@ -45,9 +47,9 @@ public class UpdateTopicHandlerTest {
     }
 
     @Test
-    public void updateTopic_withNotExistingId_throwsNotFound() {
+    void updateTopic_withNotExistingId_throwsNotFound() {
         UUID notExistingId = UUID.randomUUID();
-        UpdateTopicCommand input = new UpdateTopicCommand(notExistingId, "CRUD - part 3", "CRUD - part 3");
+        UpdateTopicCommand input = new UpdateTopicCommand(notExistingId, newTopicName, newTopicDescription);
 
         Throwable thrown = catchThrowable(() -> handler.handle(input));
 
@@ -56,7 +58,7 @@ public class UpdateTopicHandlerTest {
     }
 
     @Test
-    public void updateTopic_withNullInput_throwsInvalidParams() {
+    void updateTopic_withNullInput_throwsInvalidParams() {
         UpdateTopicCommand input = null;
 
         Throwable thrown = catchThrowable(() -> handler.handle(input));

@@ -1,17 +1,20 @@
 package pl.degath.blog.topic;
 
+import org.springframework.stereotype.Service;
 import pl.degath.blog.infrastucture.CommandHandler;
 import pl.degath.blog.infrastucture.exception.InvalidParamsException;
 import pl.degath.blog.infrastucture.exception.NotFoundException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.port.SpringRepository;
 import pl.degath.blog.topic.command.UpdateTopicCommand;
 
 import java.util.Optional;
 
-public class UpdateTopicHandler implements CommandHandler<UpdateTopicCommand> {
-    private final Repository<Topic> repository;
+@Service
+public class UpdateTopicCommandHandler implements CommandHandler<UpdateTopicCommand> {
 
-    public UpdateTopicHandler(Repository<Topic> repository) {
+    private final SpringRepository<Topic> repository;
+
+    public UpdateTopicCommandHandler(SpringRepository<Topic> repository) {
         this.repository = repository;
     }
 
@@ -23,7 +26,6 @@ public class UpdateTopicHandler implements CommandHandler<UpdateTopicCommand> {
                     throw new InvalidParamsException();
                 });
     }
-
 
     private Topic edit(UpdateTopicCommand updateTopicCommand) {
         Topic topicToEdit = findById(updateTopicCommand);

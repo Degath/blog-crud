@@ -1,18 +1,20 @@
 package pl.degath.blog.topic;
 
+import org.springframework.stereotype.Service;
 import pl.degath.blog.infrastucture.QueryHandler;
 import pl.degath.blog.infrastucture.exception.InvalidParamsException;
 import pl.degath.blog.infrastucture.exception.NotFoundException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.port.SpringRepository;
 import pl.degath.blog.topic.query.FindTopicByIdQuery;
 
 import java.util.Optional;
 
-public class FindTopicByIdHandler implements QueryHandler<FindTopicByIdQuery, TopicDto> {
+@Service
+public class FindTopicByIdQueryHandler implements QueryHandler<FindTopicByIdQuery, TopicDto> {
 
-    private final Repository<Topic> repository;
+    private final SpringRepository<Topic> repository;
 
-    public FindTopicByIdHandler(Repository<Topic> repository) {
+    public FindTopicByIdQueryHandler(SpringRepository<Topic> repository) {
         this.repository = repository;
     }
 
