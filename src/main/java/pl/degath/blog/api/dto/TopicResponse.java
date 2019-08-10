@@ -1,17 +1,19 @@
-package pl.degath.blog.topic;
+package pl.degath.blog.api.dto;
+
+import pl.degath.blog.topic.TopicDto;
 
 import java.util.UUID;
 
-public class TopicDto {
+public class TopicResponse {
 
     private final UUID id;
     private final String name;
     private final String description;
 
-    TopicDto(Topic topic) {
-        this.id = topic.getId();
-        this.name = topic.getName();
-        this.description = topic.getDescription();
+    public TopicResponse(TopicDto topicDto) {
+        this.id = topicDto.getId();
+        this.name = topicDto.getName();
+        this.description = topicDto.getDescription();
     }
 
     public UUID getId() {

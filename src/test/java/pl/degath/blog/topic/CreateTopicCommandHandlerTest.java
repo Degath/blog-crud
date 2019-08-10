@@ -1,47 +1,51 @@
 package pl.degath.blog.topic;
 
-import org.junit.Before;
-import org.junit.Test;
-import pl.degath.blog.InMemoryRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import pl.degath.blog.InMemorySpringRepository;
 import pl.degath.blog.infrastucture.exception.InvalidParamsException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.infrastucture.exception.NotFoundException;
+import pl.degath.blog.port.SpringRepository;
 import pl.degath.blog.topic.command.CreateTopicCommand;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
-public class CreateTopicHandlerTest {
+class CreateTopicCommandHandlerTest {
 
-    private CreateTopicHandler handler;
-    private Repository<Topic> repository;
+    private CreateTopicCommandHandler handler;
+    private SpringRepository<Topic> repository;
 
-    @Before
-    public void setUp() {
-        repository = new InMemoryRepository<>();
-        handler = new CreateTopicHandler(repository);
+    @BeforeEach
+    void setUp() {
+        repository = new InMemorySpringRepository<>();
+        handler = new CreateTopicCommandHandler(repository);
     }
 
     @Test
-    public void createTopic_withValidParams_createsTheTopic() {
+    void createTopic_withValidParams_createsTheTopic() {
         String createTopicName = "CRUD - part 1";
         String createTopicDescription = "Basic creation of topic.";
+
         CreateTopicCommand input = new CreateTopicCommand(createTopicName, createTopicDescription);
 
-        handler.handle(input);
+        var resultUUID = handler.handle(input);
 
-        Topic result = getFirst();
+        Topic result = findResult(resultUUID);
         assertThat(result).isNotNull();
         assertThat(result.getId()).isNotNull();
         assertThat(result.getName()).isEqualTo(createTopicName);
         assertThat(result.getDescription()).isEqualTo(createTopicDescription);
     }
 
-    private Topic getFirst() {
-        return repository.findAll().iterator().next();
+    private Topic findResult(UUID id) {
+        return repository.findById(id).orElseThrow(NotFoundException::new);
     }
 
     @Test
-    public void createTopic_withNullInput_throwsInvalidParams() {
+    void createTopic_withNullInput_throwsInvalidParams() {
         CreateTopicCommand input = null;
 
         Throwable thrown = catchThrowable(() -> handler.handle(input));

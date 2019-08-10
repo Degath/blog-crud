@@ -1,18 +1,20 @@
 package pl.degath.blog.topic;
 
+import org.springframework.stereotype.Service;
 import pl.degath.blog.infrastucture.CommandHandler;
 import pl.degath.blog.infrastucture.exception.InvalidParamsException;
 import pl.degath.blog.infrastucture.exception.NotFoundException;
-import pl.degath.blog.port.Repository;
+import pl.degath.blog.port.SpringRepository;
 import pl.degath.blog.topic.command.DeleteTopicCommand;
 
 import java.util.Optional;
 
-public class DeleteTopicHandler implements CommandHandler<DeleteTopicCommand> {
+@Service
+public class DeleteTopicCommandHandler implements CommandHandler<DeleteTopicCommand> {
 
-    private final Repository<Topic> repository;
+    private final SpringRepository<Topic> repository;
 
-    public DeleteTopicHandler(Repository<Topic> repository) {
+    public DeleteTopicCommandHandler(SpringRepository<Topic> repository) {
         this.repository = repository;
     }
 
@@ -23,7 +25,6 @@ public class DeleteTopicHandler implements CommandHandler<DeleteTopicCommand> {
                 .ifPresentOrElse(repository::delete, () -> {
                     throw new InvalidParamsException();
                 });
-
     }
 
     private Topic findById(DeleteTopicCommand deleteTopicCommand) {
