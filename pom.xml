@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>pl.degath</groupId>
-    <artifactId>blog-crud</artifactId>
+    <artifactId>blog-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
