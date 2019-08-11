@@ -25,7 +25,6 @@ public class TopicQueryController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<TopicResponse> findTopicById(@PathVariable("id") UUID id) {
         TopicDto topicDto = handler.handle(new FindTopicByIdQuery(id));
 
