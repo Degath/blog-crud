@@ -1,7 +1,7 @@
 # blog-backend
 App **in progress** strictly for learning purpose (CQRS).
 
-##technology stack
+## Technology stack
 1. Spring Boot 2.1.6
 2. Maven 3.6.0
 2. Java 12 
